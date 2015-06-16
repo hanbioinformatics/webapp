@@ -1,4 +1,4 @@
-#Door Alphavrouwtje Lysanne gjg
+#By:    Lysanne Rosaria
 
 from Bio.Blast import NCBIWWW
 from Bio.Blast import NCBIXML
