@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun May  3 23:47:35 2015
+#Door Alphavrouwtje Lysanne
 
-@author: Asus
-"""
 from Bio.Blast import NCBIWWW
 from Bio.Blast import NCBIXML
 import re
