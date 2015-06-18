@@ -1,10 +1,8 @@
-a = "lysanne leert github"
-b = "Lysanne Leert geen github"
-c = "richard is blij"
+Lysanne = input(str("Kent Lysanne github een beetje?"))
 
-if Lysanne == a:
-    print c
+if Lysanne == ("ja") or ("Ja") or ("j") or ("J"):
+    print ("Mooizo lysanne, mega trots op je lizzie!!")
     
 else:
-    print ('google het')
+    print ("RQ life, YOLO")
     
