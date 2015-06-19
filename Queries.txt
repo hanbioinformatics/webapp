@@ -1,0 +1,5 @@
+SELECT `seq-id`,`match-found-bool` FROM blast.SOURCE_SEQ;                                              //geeft alle Seq-id's en de match-found boolean
+SELECT `seq-id` FROM blast.SOURCE_SEQ;                                                                 //geeft alle seq-id's
+SELECT `seq-id`,`match-found-bool` FROM blast.SOURCE_SEQ ORDER BY 'seq-id';                            //geeft alle seq-id's en de match-found boolean gesorteerd op seq-id
+SELECT `seq-id` FROM blast.SOURCE_SEQ WHERE `match-found-bool` = 0;                                    //geeft alle seq-id's met een match-found-bool = 0
+SELECT `seq-id` FROM blast.SOURCE_SEQ WHERE `match-found-bool` = 1;                                    //geeft alle seq-id's met een match-found-bool = 1
