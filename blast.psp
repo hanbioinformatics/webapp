@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<!--
+Interface for initializing a BLAST execution.
+-->
+
+
+
+<html lang="en">
+	<head>
+		<title>Webapplicatie PG1</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/hoofd.css" />
+	</head>
+	<body>
+		<div id="header">
+			<ul>
+				<li><a href="index.html" class="current"><img src="image/home.png" height="22" /></a></li>
+				<li><a href="blast.psp">BLASTx</a></li>
+				<li><a href="search.psp">Search database</a></li>
+			</ul>
+		</div>
+		
+		<div id="content">
+			<h2>Basic Local Alignment Search Tool</h2>
+			<form action="project.py" method="GET">
+				<div class="container">
+					<label for="seqtxt">Enter the sequence:</label>
+					<input type="text" id="seqtxt" name="seq" title="Enter the sequence" placeholder="Sequence" autocomplete="off" autofocus required />
+					<input type="submit" value="BLAST" title="Blast sequence" />
+				</div>
+			</form>
+			<br />
+			Last 10 entries
+			<table>
+				<tr>
+					<th style="width: 5%;">Id</th>
+					<th style="width: 5%;">Hit</th>
+					<th>Sequence</th>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>
