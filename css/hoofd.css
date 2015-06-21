@@ -123,16 +123,17 @@ body{
 
 table, tr, td, th{
 	border-collapse: collapse;
+	border: 1px solid #000000;
+	border-style: solid;
 }
 
 table{
 	width: 100%;
-	border: 1px dotted #000000;
 	margin-top: 1em;
+	border: 1px solid #000000;
 }
 
 th{
-	border-bottom: 1px solid #000000;
 	font-weight: normal;
 	font-style: italic;
 	text-align: center;
