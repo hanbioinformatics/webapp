@@ -4,6 +4,77 @@
 Interface for searching sequences and looking up matches.
 -->
 
+<%
+
+import mysql.connector
+import re
+
+sequence = form.getfirst("seq")
+#count1 = 1
+#count2 = 1
+#seqs = []
+
+if sequence != None:
+	p1 = re.compile("^[ATGCatgc]*$")
+	m1 = p1.search(sequence)
+	p2 = re.compile("_1")
+	m2 = p2.search(sequence)
+	p3 = re.compile("_2")
+	m3 = p3.search(sequence)
+	if m1:
+		#print ("Searching in colums: nucleotide-sequence")
+		conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+		cursor = conn.cursor()
+		query = ("select `seq-id`, `nucleotide-sequence`, `match-found-bool`, \
+`SOURCE_SEQ_seq-id`,`amount-hits`,`result1-accession-code`,`result1-alignmen\
+t-score`,`result1-query-coverage-percentage`,`result1-E-value`,`result1-ident\
+-percentage` FROM `SOURCE_SEQ`, `BLAST_RESULT` where `seq-id`=`SOURCE_SEQ_seq\
+-id` AND `nucleotide-sequence` LIKE '%"+str(sequence)+"%';")   
+		#print (query)
+		cursor.execute(query)
+		for row in cursor:
+			header = row[0]
+			seq = row[1]
+			#numhits = row[4]
+			#if seq not in seqs:
+				#seqs.append(seq)
+				#print ("\n\n---------------------HITNUMBER:  "+str(count2)+"--------------------------")
+				#print ("\nHEADER:          "+str(header))
+				#print ("SEQUENCE:        "+str(seq))
+				#print ("NUMBER OF HITS:  "+str(numhits))
+            
+			hithead = row[5]
+			score = row[6]
+			qcov = row[7]
+			evalue = row[8]
+			ident = row[9]
+			#print ("\n\n---------------------HITNUMBER:  "+str(count1)+"--------------------------")
+			#print ("\nHITHEAD:         "+str(hithead))                        
+			#print ("BIT_SCORE:       "+str(score))
+			#print ("QUERY COVERAGE:  "+str(qcov))
+			#print ("E-VALUE:         "+str(evalue))
+			#print ("IDENTITY:        "+str(ident))
+            
+			#count1 += 1
+			#count2 += 1
+
+		cursor.close()
+		conn.close()
+else:
+	header = ""
+	seq = ""
+	hithead = ""
+	evalue = ""
+	score = ""
+	qcov = ""
+	ident = ""
+	
+	
+
+    
+
+%>
+
 <html lang="en">
 	<head>
 		<title>Webapplicatie PG1</title>
@@ -32,9 +103,35 @@ Interface for searching sequences and looking up matches.
 			Results
 			<table>
 				<tr>
-					<th style="width: 5%;">Id</th>
-					<th style="width: 5%;">Hit</th>
+					<th>Id</th>
+					<td><%= header %></td>
+				</tr>
+				<tr>
 					<th>Sequence</th>
+					<td><%= seq %></td>
+				</tr>
+			</table>
+			<br />
+			<table>
+				<tr>
+					<th>Hit</th>
+					<td><%= hithead %></td>
+				</tr>
+				<tr>
+					<th>E-value</th>
+					<td><%= evalue %></td>
+				</tr>
+				<tr>
+					<th>Score</th>
+					<td><%= score %></td>
+				</tr>
+				<tr>
+					<th>Query Coverage</th>
+					<td><%= qcov %></td>
+				</tr>
+				<tr>
+					<th>Identity</th>
+					<td><%= ident %></td>
 				</tr>
 			</table>
 		</div>
