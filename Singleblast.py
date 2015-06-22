@@ -15,7 +15,7 @@ def main(seq=a, action = "sb"):
     elif action == "Complement Sequence Blast" or action.upper() == "CSB":
         blastNew(seq)
     else:
-        print ("Somthing went wrong!! Try 'sb' of 'csb' with quotes")
+        print ("Somthing went wrong!! Try 'sb' or 'csb' with quotes")
 
 def blastOld(old):
     
@@ -76,11 +76,13 @@ def checkdb(zoek):
         count = 0
     else:
         count = len(rows)
-    
+    cursor.execute(query)
+    rows = cursor.fetchall()
     if m1:
         
         print ("Searching in colums: nucleotide-sequence")     
-    
+        conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+        cursor = conn.cursor()
         query = ("SELECT `seq-id`, `nucleotide-sequence`, `match-found-bool`, \
 `SOURCE_SEQ_seq-id`,`amount-hits`,`result1-accession-code`,`result1-alignmen\
 t-score`,`result1-query-coverage-percentage`,`result1-E-value`,`result1-ident\
@@ -92,10 +94,16 @@ t-score`,`result1-query-coverage-percentage`,`result1-E-value`,`result1-ident\
         if rows == []:
             print ("Sequence: \n"+str(zoek)+"\n\n")
             print ("\n\n\n----------------------Blast---------------------\n")
+            cursor.close()
+            conn.close()
             blast(zoek, count)
         else:
-            print ("Deze sequentie en blast resulaten staan al in onze database. Ga naar de search optie toe om de hits te bekijken.")
-
+            cursor.close()
+            conn.close()
+            print ("Your sequence does already exists in our database. Go to the search option on the website to see the blast results.")
+                   
+    else:
+        print ("Your sequence isn't DNA!! Change your input into DNA please!!")
         
             
 def blast(seq, number=""):
@@ -116,7 +124,7 @@ def blast(seq, number=""):
             
             bool = False
             print (1)
-            conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
+            conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
             cursor = conn.cursor()
             query = ("INSERT INTO `blast`.`SOURCE_SEQ`(`seq-id`, `match-found-bool`, `nucleotide-sequence`) VALUES ('seqwebapp_"+str(number+1)+"', "+str(bool)+",'"+str(seq)+"');")
             cursor.execute(query)   
@@ -132,7 +140,7 @@ def blast(seq, number=""):
         for alignment in blast_record.alignments:
             for hsp in alignment.hsps:
                 if hsp.expect < E_VALUE_THRESH:
-                    alignmentnr =  ("-----Alignment-"+str(c)+"----")
+                    alignmentnr =  ("\n\n-----Alignment-"+str(c)+"----")
                     hithead =  alignment.title
                     length = alignment.length
                     evalue =  hsp.expect
@@ -146,7 +154,8 @@ def blast(seq, number=""):
                     qcov = float(identity) / float(querylen) * float(100)
                     if numhits == None:
                         numhits ="NULL"
-                    print ("\n\nHITHEAD:   ", hithead)
+                    print (alignmentnr)
+                    print ("\nHITHEAD:   ", hithead)
                     print ("LENGTH:    ", length)
                     print ("E-VALUE:   ", evalue)
                     print ("GAPS:      ", gaps)
@@ -158,7 +167,7 @@ def blast(seq, number=""):
                     print ("QCOV:      ", qcov)
                     if number == 0 and c == 1:
                         print (1)
-                        conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
+                        conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
                         cursor = conn.cursor()
                         query = ("INSERT INTO `blast`.`SOURCE_SEQ`(`seq-id`, `match-found-bool`, `nucleotide-sequence`) VALUES ('seqwebapp_"+str(number+1)+"', "+str(bool)+",'"+str(seq)+"');")
                         cursor.execute(query)   
@@ -168,7 +177,7 @@ def blast(seq, number=""):
                         
                         if c == 1:
                             print (2)
-                            conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
+                            conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
                             cursor = conn.cursor()
                             query1 = ("INSERT INTO `blast`.`BLAST_RESULT`(`amount-hits`, `result1-accession-code`, `result1-alignment-score`, `result1-query-coverage-percentage`, `result1-E-value`, `result1-ident-percentage`, `SOURCE_SEQ_seq-id`) VALUES ("+str(numhits)+", '"+str(hithead)+"', "+str(score)+", "+str(qcov)+", "+str(evalue)+", "+str(identity)+",'seqwebapp_"+str(number+1)+"');")
                             cursor.execute(query1)
@@ -180,7 +189,7 @@ def blast(seq, number=""):
                             
                     elif number == 0 and c < 11:
                         print (3)
-                        conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
+                        conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
                         cursor = conn.cursor()
                         query2 = ("UPDATE `blast`.`BLAST_RESULT` SET `result"+str(c)+"-accession-code`='"+str(hithead)+"', `result"+str(c)+"-alignment-score`='"+str(score)+"', `result"+str(c)+"-query-coverage-percentage`='"+str(qcov)+"', `result"+str(c)+"-E-value`='"+str(evalue)+"', `result"+str(c)+"-ident-percentage`='"+str(identity)+"' WHERE `SOURCE_SEQ_seq-id`='seqwebapp_"+str(number+1)+"';")
                         cursor.execute(query2)
@@ -192,7 +201,7 @@ def blast(seq, number=""):
                         
                     elif number > 0 and c == 1:
                         print (4)
-                        conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
+                        conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
                         cursor = conn.cursor()
                         query = ("INSERT INTO `blast`.`SOURCE_SEQ`(`seq-id`, `match-found-bool`, `nucleotide-sequence`) VALUES ('seqwebapp_"+str(number+1)+"', "+str(bool)+",'"+str(seq)+"');")
                         cursor.execute(query)   
@@ -202,7 +211,7 @@ def blast(seq, number=""):
                         
                         if c == 1:
                             print(5)
-                            conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
+                            conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
                             cursor = conn.cursor()
                             query1 = ("INSERT INTO `blast`.`BLAST_RESULT`(`amount-hits`, `result1-accession-code`, `result1-alignment-score`, `result1-query-coverage-percentage`, `result1-E-value`, `result1-ident-percentage`, `SOURCE_SEQ_seq-id`) VALUES ("+str(numhits)+", '"+str(hithead)+"', "+str(score)+", "+str(qcov)+", "+str(evalue)+", "+str(identity)+",'seqwebapp_"+str(number+1)+"');")
                             cursor.execute(query1)
@@ -214,7 +223,7 @@ def blast(seq, number=""):
                             
                     elif number > 0 and c < 11:
                         print(6)
-                        conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
+                        conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
                         cursor = conn.cursor()
                         query2 = ("UPDATE `blast`.`BLAST_RESULT` SET `result"+str(c)+"-accession-code`='"+str(hithead)+"', `result"+str(c)+"-alignment-score`='"+str(score)+"', `result"+str(c)+"-query-coverage-percentage`='"+str(qcov)+"', `result"+str(c)+"-E-value`='"+str(evalue)+"', `result"+str(c)+"-ident-percentage`='"+str(identity)+"' WHERE `SOURCE_SEQ_seq-id`='seqwebapp_"+str(number+1)+"';")
                         cursor.execute(query2)
@@ -229,4 +238,4 @@ def blast(seq, number=""):
                         
                         
     print (bool)
-main()
+main(action=b)
