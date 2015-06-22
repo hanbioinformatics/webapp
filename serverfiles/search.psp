@@ -22,38 +22,24 @@ if sequence != None:
 	p3 = re.compile("_2")
 	m3 = p3.search(sequence)
 	if m1:
-		#print ("Searching in colums: nucleotide-sequence")
-		conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
+		conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
 		cursor = conn.cursor()
 		query = ("select `seq-id`, `nucleotide-sequence`, `match-found-bool`, \
 `SOURCE_SEQ_seq-id`,`amount-hits`,`result1-accession-code`,`result1-alignmen\
 t-score`,`result1-query-coverage-percentage`,`result1-E-value`,`result1-ident\
 -percentage` FROM `SOURCE_SEQ`, `BLAST_RESULT` where `seq-id`=`SOURCE_SEQ_seq\
 -id` AND `nucleotide-sequence` LIKE '%"+str(sequence)+"%';")   
-		#print (query)
 		cursor.execute(query)
 		for row in cursor:
 			header = row[0]
 			seq = row[1]
 			#numhits = row[4]
-			#if seq not in seqs:
-				#seqs.append(seq)
-				#print ("\n\n---------------------HITNUMBER:  "+str(count2)+"--------------------------")
-				#print ("\nHEADER:          "+str(header))
-				#print ("SEQUENCE:        "+str(seq))
-				#print ("NUMBER OF HITS:  "+str(numhits))
             
 			hithead = row[5]
 			score = row[6]
 			qcov = row[7]
 			evalue = row[8]
 			ident = row[9]
-			#print ("\n\n---------------------HITNUMBER:  "+str(count1)+"--------------------------")
-			#print ("\nHITHEAD:         "+str(hithead))                        
-			#print ("BIT_SCORE:       "+str(score))
-			#print ("QUERY COVERAGE:  "+str(qcov))
-			#print ("E-VALUE:         "+str(evalue))
-			#print ("IDENTITY:        "+str(ident))
             
 			#count1 += 1
 			#count2 += 1
@@ -77,7 +63,7 @@ else:
 
 <html lang="en">
 	<head>
-		<title>Webapplicatie PG1</title>
+		<title>Webapplication PG1</title>
 		
 		<link rel="stylesheet" type="text/css" href="css/hoofd.css" />
 	</head>
@@ -87,6 +73,7 @@ else:
 				<li><a href="index.html" class="current"><img src="image/home.png" height="22" /></a></li>
 				<li><a href="blast.psp">BLASTx</a></li>
 				<li><a href="search.psp">Search database</a></li>
+				<li><a href="info.psp">Downloads</a></li>
 			</ul>
 		</div>
 		
@@ -134,6 +121,12 @@ else:
 					<td><%= ident %></td>
 				</tr>
 			</table>
+		<br />
+		<i>Warning: This site is currently only optimized for <a target="_blank" href="https://www.google.com/chrome/browser/" title="Google Chrome">Google Chrome</a>.
+		Using a different browser may result in unexpected display errors.</i>
+		</div>
+		<div id="footer">
+			Copyright &copy; 2015 Dyogo Borst &ndash; Lysanne Rosaria &ndash; Richard Jansen &ndash; Roel van de Wiel
 		</div>
 	</body>
 </html>
