@@ -26,7 +26,6 @@ def blastNew(old):
     complement = toComplement(old)
     new = turnAround(complement)
     print ("Sequence Complement Turned Around: \n"+str(new)+"\n\n")
-    print ("\n\n\n----------------------Blast Seq Complement Turned Around---------------------\n")
     zoeken = checkdb(new)
     
 
