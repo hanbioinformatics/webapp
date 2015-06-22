@@ -22,7 +22,7 @@ class found:
         p3 = re.compile("[A-Z\|a-z@.,_\[\]0-9]*")
         m3 = p3.search(zoek)
 
-        conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+        conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
         cursor = conn.cursor()
         if m1:
              

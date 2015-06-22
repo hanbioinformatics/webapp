@@ -64,7 +64,7 @@ def checkdb(zoek):
     p1 = re.compile("^[ATGCatgc]*$")
     m1 = p1.search(zoek)
 
-    conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+    conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
     cursor = conn.cursor()
     query = ("SELECT * FROM `SOURCE_SEQ`, `BLAST_RESULT` where `seq-id`=`SOURCE_SEQ_seq\
 -id` AND `seq-id` LIKE '%seqwebapp%';")
@@ -80,7 +80,7 @@ def checkdb(zoek):
     if m1:
         
         print ("Searching in colums: nucleotide-sequence")     
-        conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+        conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
         cursor = conn.cursor()
         query = ("SELECT `seq-id`, `nucleotide-sequence`, `match-found-bool`, \
 `SOURCE_SEQ_seq-id`,`amount-hits`,`result1-accession-code`,`result1-alignmen\
@@ -123,7 +123,7 @@ def blast(seq, number=""):
             
             bool = False
             print (1)
-            conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+            conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
             cursor = conn.cursor()
             query = ("INSERT INTO `blast`.`SOURCE_SEQ`(`seq-id`, `match-found-bool`, `nucleotide-sequence`) VALUES ('seqwebapp_"+str(number+1)+"', "+str(bool)+",'"+str(seq)+"');")
             cursor.execute(query)   
@@ -166,7 +166,7 @@ def blast(seq, number=""):
                     print ("QCOV:      ", qcov)
                     if number == 0 and c == 1:
                         print (1)
-                        conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+                        conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
                         cursor = conn.cursor()
                         query = ("INSERT INTO `blast`.`SOURCE_SEQ`(`seq-id`, `match-found-bool`, `nucleotide-sequence`) VALUES ('seqwebapp_"+str(number+1)+"', "+str(bool)+",'"+str(seq)+"');")
                         cursor.execute(query)   
@@ -176,7 +176,7 @@ def blast(seq, number=""):
                         
                         if c == 1:
                             print (2)
-                            conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+                            conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
                             cursor = conn.cursor()
                             query1 = ("INSERT INTO `blast`.`BLAST_RESULT`(`amount-hits`, `result1-accession-code`, `result1-alignment-score`, `result1-query-coverage-percentage`, `result1-E-value`, `result1-ident-percentage`, `SOURCE_SEQ_seq-id`) VALUES ("+str(numhits)+", '"+str(hithead)+"', "+str(score)+", "+str(qcov)+", "+str(evalue)+", "+str(identity)+",'seqwebapp_"+str(number+1)+"');")
                             cursor.execute(query1)
@@ -188,7 +188,7 @@ def blast(seq, number=""):
                             
                     elif number == 0 and c < 11:
                         print (3)
-                        conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+                        conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
                         cursor = conn.cursor()
                         query2 = ("UPDATE `blast`.`BLAST_RESULT` SET `result"+str(c)+"-accession-code`='"+str(hithead)+"', `result"+str(c)+"-alignment-score`='"+str(score)+"', `result"+str(c)+"-query-coverage-percentage`='"+str(qcov)+"', `result"+str(c)+"-E-value`='"+str(evalue)+"', `result"+str(c)+"-ident-percentage`='"+str(identity)+"' WHERE `SOURCE_SEQ_seq-id`='seqwebapp_"+str(number+1)+"';")
                         cursor.execute(query2)
@@ -200,7 +200,7 @@ def blast(seq, number=""):
                         
                     elif number > 0 and c == 1:
                         print (4)
-                        conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+                        conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
                         cursor = conn.cursor()
                         query = ("INSERT INTO `blast`.`SOURCE_SEQ`(`seq-id`, `match-found-bool`, `nucleotide-sequence`) VALUES ('seqwebapp_"+str(number+1)+"', "+str(bool)+",'"+str(seq)+"');")
                         cursor.execute(query)   
@@ -210,7 +210,7 @@ def blast(seq, number=""):
                         
                         if c == 1:
                             print(5)
-                            conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+                            conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
                             cursor = conn.cursor()
                             query1 = ("INSERT INTO `blast`.`BLAST_RESULT`(`amount-hits`, `result1-accession-code`, `result1-alignment-score`, `result1-query-coverage-percentage`, `result1-E-value`, `result1-ident-percentage`, `SOURCE_SEQ_seq-id`) VALUES ("+str(numhits)+", '"+str(hithead)+"', "+str(score)+", "+str(qcov)+", "+str(evalue)+", "+str(identity)+",'seqwebapp_"+str(number+1)+"');")
                             cursor.execute(query1)
@@ -222,7 +222,7 @@ def blast(seq, number=""):
                             
                     elif number > 0 and c < 11:
                         print(6)
-                        conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+                        conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
                         cursor = conn.cursor()
                         query2 = ("UPDATE `blast`.`BLAST_RESULT` SET `result"+str(c)+"-accession-code`='"+str(hithead)+"', `result"+str(c)+"-alignment-score`='"+str(score)+"', `result"+str(c)+"-query-coverage-percentage`='"+str(qcov)+"', `result"+str(c)+"-E-value`='"+str(evalue)+"', `result"+str(c)+"-ident-percentage`='"+str(identity)+"' WHERE `SOURCE_SEQ_seq-id`='seqwebapp_"+str(number+1)+"';")
                         cursor.execute(query2)

@@ -23,7 +23,7 @@ def regex(zoek):
     if m1:
         
         print ("Searching in colums: nucleotide-sequence")
-        conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+        conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
         cursor = conn.cursor()
     
         query = ("SELECT `seq-id`, `nucleotide-sequence`, `match-found-bool`, \
@@ -71,7 +71,7 @@ t-score`,`result1-query-coverage-percentage`,`result1-E-value`,`result1-ident\
     elif m2:
               
         print ("Searching in colums: seq-id")
-        conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+        conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
         cursor = conn.cursor()
     
         query = ("SELECT * FROM `SOURCE_SEQ`, `BLAST_RESULT` WHERE `seq-id`=`SOURCE_SEQ_seq-id` AND (`result1-accession-code` LIKE '%"+str(zoek)+"%' OR `result2-accession-code` LIKE '%"+str(zoek)+"%' OR\
@@ -116,7 +116,7 @@ t-score`,`result1-query-coverage-percentage`,`result1-E-value`,`result1-ident\
             
     elif m3:
         print ("Searching in colums: seq-id")
-        conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+        conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
         cursor = conn.cursor()
         
         query = ("SELECT * FROM `SOURCE_SEQ`, `BLAST_RESULT` WHERE `seq-id`=`SOURCE_SEQ_seq-id` AND (`result1-accession-code` LIKE '%"+str(zoek)+"%' OR `result2-accession-code` LIKE '%"+str(zoek)+"%' OR\

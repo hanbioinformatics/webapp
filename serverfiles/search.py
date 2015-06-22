@@ -18,7 +18,7 @@ def regex(zoek):
     m3 = p3.search(zoek)
     if m1:
         print ("Searching in colums: nucleotide-sequence")
-        conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+        conn = mysql.connector.connect(host="localhost",user = "richard", password = "richard", db = "blast", port = 3307)
         cursor = conn.cursor()
         query = ("select `seq-id`, `nucleotide-sequence`, `match-found-bool`, \
 `SOURCE_SEQ_seq-id`,`amount-hits`,`result1-accession-code`,`result1-alignmen\
