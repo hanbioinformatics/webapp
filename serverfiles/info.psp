@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<!--
+
+Displays extended information about the funcions BLASTx and Search database.
+
+-->
+
+<html lang="en">
+	<head>
+		<title>Webapplication PG1</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/hoofd.css" />
+	</head>
+	<body>
+		<div id="header">
+			<ul>
+				<li><a href="index.html" class="current"><img src="image/home.png" height="22" /></a></li>
+				<li><a href="blast.psp">BLASTx</a></li>
+				<li><a href="search.psp">Search database</a></li>
+				<li><a href="info.psp">Downloads</a></li>
+			</ul>
+		</div>
+		
+		<div id="content">
+			<p>
+			<h2> Downloads </h2>
+			<a href="Technische Documentatie.docx">Technical Documentation</a><br />
+			<br />
+			<br />
+			<i>Warning: This site is currently only optimized for <a target="_blank" href="https://www.google.com/chrome/browser/" title="Google Chrome">Google Chrome</a>.
+			Using a different browser may result in unexpected display errors.</i>
+			</p>
+		</div>
+		<div id="footer">
+			Copyright &copy; 2015 Dyogo Borst &ndash; Lysanne Rosaria &ndash; Richard Jansen &ndash; Roel van de Wiel
+		</div>
+	</body>
+</html>
