@@ -4,7 +4,49 @@
 Interface for initializing a BLAST execution.
 -->
 
+<%
 
+from Bio.Blast import NCBIWWW
+from Bio.Blast import NCBIXML
+
+sequence = form.getfirst("seq")
+
+if sequence != None:
+	results_handle = NCBIWWW.qblast("blastx", "nr", sequence, hitlist_size=10, expect=0.001, matrix_name="BLOSUM62")
+	blast_records = NCBIXML.parse(results_handle)
+
+	E_VALUE_THRESH = 1
+	c = 1
+
+	for blast_record in blast_records:
+		for alignment in blast_record.alignments:
+			for hsp in alignment.hsps:
+				if hsp.expect < E_VALUE_THRESH:
+					alignmentnr =  ("-----Alignment-"+str(c)+"----")
+					hithead =  alignment.title
+					length = alignment.length
+					evalue =  hsp.expect
+					gaps =  hsp.gaps
+					query =  hsp.query
+					sub = hsp.sbjct
+					match = hsp.match
+					score = hsp.score
+					identity = hsp.identities
+					querylen = len(query)
+					qcov = float(identity) / float(querylen) * float(100)
+					
+else:
+	hithead = ""
+	length = ""
+	evalue = ""
+	score = ""
+	qcov = ""
+	identity = ""
+	query = ""
+	sub = ""
+	match = ""
+
+%>
 
 <html lang="en">
 	<head>
@@ -23,7 +65,7 @@ Interface for initializing a BLAST execution.
 		
 		<div id="content">
 			<h2>Basic Local Alignment Search Tool</h2>
-			<form action="project.py" method="GET">
+			<form action="blast.psp" method="GET">
 				<div class="container">
 					<label for="seqtxt">Enter the sequence:</label>
 					<input type="text" id="seqtxt" name="seq" title="Enter the sequence" placeholder="Sequence" autocomplete="off" autofocus required />
@@ -31,12 +73,43 @@ Interface for initializing a BLAST execution.
 				</div>
 			</form>
 			<br />
-			Last 10 entries
+			Results
 			<table>
 				<tr>
-					<th style="width: 5%;">Id</th>
-					<th style="width: 5%;">Hit</th>
-					<th>Sequence</th>
+					<th>Hit</th>
+					<td><%= hithead %></td>
+				</tr>
+				<tr>
+					<th>Length</th>
+					<td><%= length %></td>
+				</tr>
+				<tr>
+					<th>E-value</th>
+					<td><%= evalue %></td>
+				</tr>
+				<tr>
+					<th>Score</th>
+					<td><%= score %></td>
+				</tr>
+				<tr>
+					<th>Identity</th>
+					<td><%= identity %></td>
+				</tr>
+				<tr>
+					<th>Query Coverage</th>
+					<td><%= qcov %></td>
+				</tr>
+				<tr>
+					<th>Query</th>
+					<td><%= query %></td>
+				</tr>
+				<tr>
+					<th>Match</th>
+					<td><%= match %></td>
+				</tr>
+				<tr>
+					<th>Subject</th>
+					<td><%= sub %></td>
 				</tr>
 			</table>
 		</div>
