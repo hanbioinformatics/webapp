@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<!--
+Interface for matching the input-sequence with the selfmade database, initializing a BLAST execution and insertint into or updating the database.
+This function doe not yet work on the webapplication (overwrite primary key error), but works well with the original python-script.
+
+-->
+
+<%
+
+from Bio.Blast import NCBIWWW
+from Bio.Blast import NCBIXML
+import re
+import mysql.connector
+
+sequence = form.getfirst("seq")
+nomatch = ""
+
+if sequence != None:
+	p1 = re.compile("^[ATGCatgc]*$")
+	m1 = p1.search(sequence)
+
+	conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+	cursor = conn.cursor()
+	query = ("SELECT * FROM `SOURCE_SEQ`, `BLAST_RESULT` where `seq-id`=`SOURCE_SEQ_seq\
+-id` AND `seq-id` LIKE '%sequence%';")
+	#print (query)
+	cursor.execute(query)
+	rows = cursor.fetchall()
+	if rows == []:
+		count = 0
+	else:
+		count = len(rows)
+    
+	if m1:
+		#print ("Searching in colums: nucleotide-sequence")     
+		query = ("SELECT `seq-id`, `nucleotide-sequence`, `match-found-bool`, \
+`SOURCE_SEQ_seq-id`,`amount-hits`,`result1-accession-code`,`result1-alignmen\
+t-score`,`result1-query-coverage-percentage`,`result1-E-value`,`result1-ident\
+-percentage` FROM `SOURCE_SEQ`, `BLAST_RESULT` where `seq-id`=`SOURCE_SEQ_seq\
+-id` AND `nucleotide-sequence` LIKE '%"+str(sequence)+"%';")
+		#print (query)
+		cursor.execute(query)
+		rows = cursor.fetchall()
+		if rows == []:
+			#print ("Sequence: \n"+str(zoek)+"\n\n")
+			#print ("\n\n\n----------------------Blast---------------------\n")
+			bool = True
+			results_handle = NCBIWWW.qblast("blastx", "nr", sequence, hitlist_size=10, expect=0.001, matrix_name="BLOSUM62")
+			blast_records = NCBIXML.parse(results_handle)
+
+			E_VALUE_THRESH = 1
+			c = 1
+
+			for blast_record in blast_records:
+				desc = blast_record.descriptions
+				if desc == []:
+            
+					bool = False
+					#print (1)
+					conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+					cursor = conn.cursor()
+					query = ("INSERT INTO `blast`.`SOURCE_SEQ`(`seq-id`, `match-found-bool`, `nucleotide-sequence`) VALUES ('seqwebapp_"+str(count+1)+"', "+str(bool)+",'"+str(sequence)+"');")
+					cursor.execute(query)   
+					conn.commit()
+					cursor.close()
+					conn.close()
+					#print ("No Blast results have been found to your sequence with Blastx, BLOSUM62, e-value < 0.001, nr database. Try different arguments on the Blast tool website: http://blast.ncbi.nlm.nih.gov/Blast.cgi.")
+            
+				else:
+					numhits = len(desc)
+					
+				for alignment in blast_record.alignments:
+					for hsp in alignment.hsps:
+						if hsp.expect < E_VALUE_THRESH:
+							alignmentnr =  ("-----Alignment-"+str(c)+"----")
+							hithead =  alignment.title
+							length = alignment.length
+							evalue =  hsp.expect
+							gaps =  hsp.gaps
+							query =  hsp.query
+							sub = hsp.sbjct
+							match = hsp.match
+							score = hsp.score
+							identity = hsp.identities
+							querylen = len(query)
+							qcov = float(identity) / float(querylen) * float(100)
+							if numhits == None:
+								numhits ="NULL"
+							if count == 0 and c == 1:
+								#print (1)
+								conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+								cursor = conn.cursor()
+								query = ("INSERT INTO `blast`.`SOURCE_SEQ`(`seq-id`, `match-found-bool`, `nucleotide-sequence`) VALUES ('seqwebapp_"+str(count+1)+"', "+str(bool)+",'"+str(sequence)+"');")
+								cursor.execute(query)   
+								conn.commit()
+								cursor.close()
+								conn.close()
+                        
+								if c == 1:
+									#print (2)
+									conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+									cursor = conn.cursor()
+									query1 = ("INSERT INTO `blast`.`BLAST_RESULT`(`amount-hits`, `result1-accession-code`, `result1-alignment-score`, `result1-query-coverage-percentage`, `result1-E-value`, `result1-ident-percentage`, `SOURCE_SEQ_seq-id`) VALUES ("+str(numhits)+", '"+str(hithead)+"', "+str(score)+", "+str(qcov)+", "+str(evalue)+", "+str(identity)+",'seqwebapp_"+str(count+1)+"');")
+									cursor.execute(query1)
+									#print (query1)
+									conn.commit()
+									cursor.close()
+									conn.close()
+									c += 1
+                            
+							elif count == 0 and c < 11:
+								#print (3)
+								conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+								cursor = conn.cursor()
+								query2 = ("UPDATE `blast`.`BLAST_RESULT` SET `result"+str(c)+"-accession-code`='"+str(hithead)+"', `result"+str(c)+"-alignment-score`='"+str(score)+"', `result"+str(c)+"-query-coverage-percentage`='"+str(qcov)+"', `result"+str(c)+"-E-value`='"+str(evalue)+"', `result"+str(c)+"-ident-percentage`='"+str(identity)+"' WHERE `SOURCE_SEQ_seq-id`='seqwebapp_"+str(count+1)+"';")
+								cursor.execute(query2)
+								#print (query2)
+								conn.commit()
+								cursor.close()
+								conn.close()
+								c += 1
+                        
+							elif count > 0 and c == 1:
+								#print (4)
+								conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+								cursor = conn.cursor()
+								query = ("INSERT INTO `blast`.`SOURCE_SEQ`(`seq-id`, `match-found-bool`, `nucleotide-sequence`) VALUES ('seqwebapp_"+str(count+1)+"', "+str(bool)+",'"+str(sequence)+"');")
+								cursor.execute(query)   
+								conn.commit()
+								cursor.close()
+								conn.close()
+                        
+								if c == 1:
+									#print(5)
+									conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+									cursor = conn.cursor()
+									query1 = ("INSERT INTO `blast`.`BLAST_RESULT`(`amount-hits`, `result1-accession-code`, `result1-alignment-score`, `result1-query-coverage-percentage`, `result1-E-value`, `result1-ident-percentage`, `SOURCE_SEQ_seq-id`) VALUES ("+str(numhits)+", '"+str(hithead)+"', "+str(score)+", "+str(qcov)+", "+str(evalue)+", "+str(identity)+",'seqwebapp_"+str(count+1)+"');")
+									cursor.execute(query1)
+									#print (query1)
+									conn.commit()
+									cursor.close()
+									conn.close()
+									c += 1                            
+                            
+							elif count > 0 and c < 11:
+								#print(6)
+								conn = mysql.connector.connect(host="ithurtswhenip.nl",user = "richard", password = "richard", db = "blast", port = 3307)
+								cursor = conn.cursor()
+								query2 = ("UPDATE `blast`.`BLAST_RESULT` SET `result"+str(c)+"-accession-code`='"+str(hithead)+"', `result"+str(c)+"-alignment-score`='"+str(score)+"', `result"+str(c)+"-query-coverage-percentage`='"+str(qcov)+"', `result"+str(c)+"-E-value`='"+str(evalue)+"', `result"+str(c)+"-ident-percentage`='"+str(identity)+"' WHERE `SOURCE_SEQ_seq-id`='seqwebapp_"+str(count+1)+"';")
+								cursor.execute(query2)
+								#print (query2)
+								conn.commit()
+								cursor.close()
+								conn.close()
+								c += 1            
+                        
+			#print (bool)
+		
+	else:
+		nomatch += "<p> This sequence is already saved in the database. Go to the 'Search database' option for the results. </p>"
+		#print ("Deze sequentie en blast resulaten staan al in onze database. Ga naar de search optie toe om de hits te bekijken.")
+
+else:
+	hithead = ""
+	length = ""
+	evalue = ""
+	score = ""
+	qcov = ""
+	identity = ""
+	query = ""
+	sub = ""
+	match = ""
+	nomatch = ""
+%>
+
+<html lang="en">
+	<head>
+		<title>Webapplication PG1</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/hoofd.css" />
+	</head>
+	<body>
+		<div id="header">
+			<ul>
+				<li><a href="index.html" class="current"><img src="image/home.png" height="22" /></a></li>
+				<li><a href="blast.psp">BLASTx</a></li>
+				<li><a href="search.psp">Search database</a></li>
+				<li><a href="info.psp">Help</a></li>
+			</ul>
+		</div>
+		
+		<div id="content">
+			<h2>Basic Local Alignment Search Tool</h2>
+			<form action="blast.psp" method="GET">
+				<div class="container">
+					<label for="seqtxt">Enter the sequence:</label>
+					<input type="text" id="seqtxt" name="seq" title="Enter the sequence" placeholder="Sequence" autocomplete="off" autofocus required />
+					<input type="submit" value="BLAST" title="Blast sequence" />
+				</div>
+			</form>
+			<br />
+			<%= nomatch %>
+			Results
+			<table>
+				<tr>
+					<th>Hit</th>
+					<td><%= hithead %></td>
+				</tr>
+				<tr>
+					<th>Length</th>
+					<td><%= length %></td>
+				</tr>
+				<tr>
+					<th>E-value</th>
+					<td><%= evalue %></td>
+				</tr>
+				<tr>
+					<th>Score</th>
+					<td><%= score %></td>
+				</tr>
+				<tr>
+					<th>Identity</th>
+					<td><%= identity %></td>
+				</tr>
+				<tr>
+					<th>Query Coverage</th>
+					<td><%= qcov %></td>
+				</tr>
+				<tr>
+					<th>Query</th>
+					<td><%= query %></td>
+				</tr>
+				<tr>
+					<th>Match</th>
+					<td><%= match %></td>
+				</tr>
+				<tr>
+					<th>Subject</th>
+					<td><%= sub %></td>
+				</tr>
+			</table>
+		<br />
+		<i>Warning: This site is currently only optimized for <a target="_blank" href="https://www.google.com/chrome/browser/" title="Google Chrome">Google Chrome</a>.
+		Using a different browser may result in unexpected display errors.</i>
+		</div>
+		<div id="footer">
+			Copyright &copy; 2015 Dyogo Borst &ndash; Lysanne Rosaria &ndash; Richard Jansen &ndash; Roel van de Wiel
+		</div>
+	</body>
+</html>
